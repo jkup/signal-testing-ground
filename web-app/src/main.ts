@@ -1,6 +1,21 @@
 import * as monaco from "monaco-editor";
 import { defaultExample } from "./examples";
 
+// Configure Monaco Editor environment to handle worker requests
+(self as any).MonacoEnvironment = {
+  getWorker(_: string, label: string) {
+    // For any worker requests, return a simple worker that does nothing
+    // This prevents the worker loading errors while keeping the editor functional
+    const workerBlob = new Blob(
+      ['// Monaco Editor Worker\nself.addEventListener("message", () => {});'],
+      {
+        type: "application/javascript",
+      }
+    );
+    return new Worker(URL.createObjectURL(workerBlob));
+  },
+};
+
 // Import all framework implementations
 import { preactFramework } from "./frameworks/preact";
 import { vueFramework } from "./frameworks/vue";
@@ -77,10 +92,22 @@ class SignalsPlayground {
       lineNumbers: "on",
       folding: true,
       bracketPairColorization: { enabled: true },
+      links: false,
+      hover: {
+        enabled: false,
+      },
+      quickSuggestions: false,
+      parameterHints: {
+        enabled: false,
+      },
+      suggest: {
+        showWords: false,
+        showSnippets: false,
+      },
     });
 
     // Note: Users can write JavaScript code with signal/computed/effect functions
-    // Syntax highlighting will work without TypeScript worker issues
+    // Syntax highlighting will work without worker issues
   }
 
   private initializeFrameworkList() {
