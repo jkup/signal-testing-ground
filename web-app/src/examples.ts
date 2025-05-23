@@ -2,11 +2,15 @@ export const examples = {
   "Getting Started": `/**
  * 🚀 Welcome to the Signals Testing Playground!
  * 
- * You have access to these reactive primitives:
+ * Available APIs (try auto-completion with Ctrl+Space):
  * • signal(value) - Create reactive state
  * • computed(() => {}) - Derived state that updates automatically  
  * • effect(() => {}) - Side effects that run when dependencies change
  * • batch(() => {}) - Group multiple updates together
+ * 
+ * Quick reference:
+ * • mySignal.get() - Get current value
+ * • mySignal.set(newValue) - Set new value
  * 
  * Try editing this code and click "Run Tests" to see how different 
  * signal frameworks handle the same reactive logic!

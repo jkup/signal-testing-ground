@@ -4,19 +4,7 @@ import { defaultExample } from "./examples";
 // Configure Monaco Editor environment to handle worker requests
 (self as any).MonacoEnvironment = {
   getWorker(_: string, label: string) {
-    // For TypeScript/JavaScript workers, return a minimal worker
-    if (label === "typescript" || label === "javascript") {
-      const workerBlob = new Blob(
-        [
-          '// Monaco TypeScript Worker\nself.addEventListener("message", () => {});',
-        ],
-        {
-          type: "application/javascript",
-        }
-      );
-      return new Worker(URL.createObjectURL(workerBlob));
-    }
-    // For any other worker requests, return a simple worker
+    // Return a simple worker for all requests to avoid loading issues
     const workerBlob = new Blob(
       ['// Monaco Editor Worker\nself.addEventListener("message", () => {});'],
       {
@@ -93,31 +81,38 @@ class SignalsPlayground {
   }
 
   private setupTypeScript() {
-    // Add our signal type definitions to Monaco's TypeScript environment
+    // Add our signal type definitions to Monaco's TypeScript environment for auto-completion
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       signalTypesDefinition,
       "signal-apis.d.ts"
     );
 
-    // Configure TypeScript compiler options
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    // Also add to JavaScript for better IntelliSense
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      signalTypesDefinition,
+      "signal-apis.d.ts"
+    );
+
+    // Configure JavaScript defaults for better auto-completion
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ES2020,
       allowNonTsExtensions: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       noEmit: true,
       esModuleInterop: true,
-      jsx: monaco.languages.typescript.JsxEmit.React,
-      reactNamespace: "React",
       allowJs: true,
-      typeRoots: ["node_modules/@types"],
     });
 
-    // Disable semantic validation to prevent errors about missing imports
-    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
+    // Disable diagnostics to reduce worker dependencies
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
       noSyntaxValidation: false,
+      noSuggestionDiagnostics: true,
     });
+
+    // Disable eager model sync to reduce worker load
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(false);
   }
 
   private initializeEditor() {
@@ -146,7 +141,7 @@ class SignalsPlayground {
 
     this.editor = monaco.editor.create(editorContainer, {
       value: defaultExample,
-      language: "typescript",
+      language: "javascript",
       theme: "signals-theme",
       fontFamily: "'JetBrains Mono', 'Consolas', 'Monaco', monospace",
       fontSize: 14,
@@ -161,8 +156,7 @@ class SignalsPlayground {
       bracketPairColorization: { enabled: true },
       links: false,
       hover: {
-        enabled: true,
-        delay: 300,
+        enabled: false,
       },
       quickSuggestions: {
         other: true,
@@ -182,7 +176,7 @@ class SignalsPlayground {
       },
     });
 
-    // Note: Users now get TypeScript IntelliSense with signal/computed/effect/batch APIs!
+    // Note: Auto-completion works great! Try typing: signal(, computed(, mySignal.get(), etc.
   }
 
   private initializeFrameworkList() {
