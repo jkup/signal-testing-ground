@@ -4,8 +4,19 @@ import { defaultExample } from "./examples";
 // Configure Monaco Editor environment to handle worker requests
 (self as any).MonacoEnvironment = {
   getWorker(_: string, label: string) {
-    // For any worker requests, return a simple worker that does nothing
-    // This prevents the worker loading errors while keeping the editor functional
+    // For TypeScript/JavaScript workers, return a minimal worker
+    if (label === "typescript" || label === "javascript") {
+      const workerBlob = new Blob(
+        [
+          '// Monaco TypeScript Worker\nself.addEventListener("message", () => {});',
+        ],
+        {
+          type: "application/javascript",
+        }
+      );
+      return new Worker(URL.createObjectURL(workerBlob));
+    }
+    // For any other worker requests, return a simple worker
     const workerBlob = new Blob(
       ['// Monaco Editor Worker\nself.addEventListener("message", () => {});'],
       {
@@ -15,6 +26,31 @@ import { defaultExample } from "./examples";
     return new Worker(URL.createObjectURL(workerBlob));
   },
 };
+
+// Define TypeScript types for our signal APIs
+const signalTypesDefinition = `
+// Reactive signal APIs available in this playground
+interface ReactiveSignal<T> {
+  get(): T;
+  set(value: T): void;
+}
+
+interface ReactiveComputed<T> {
+  get(): T;
+}
+
+declare function signal<T>(value: T): ReactiveSignal<T>;
+declare function computed<T>(fn: () => T): ReactiveComputed<T>;
+declare function effect(fn: () => void | (() => void)): () => void;
+declare function batch(fn: () => void): void;
+
+// Console is also available
+declare const console: {
+  log(...args: any[]): void;
+  error(...args: any[]): void;
+  warn(...args: any[]): void;
+};
+`;
 
 // Import all framework implementations
 import { preactFramework } from "./frameworks/preact";
@@ -50,9 +86,38 @@ class SignalsPlayground {
   ];
 
   constructor() {
+    this.setupTypeScript();
     this.initializeEditor();
     this.initializeFrameworkList();
     this.initializeEventListeners();
+  }
+
+  private setupTypeScript() {
+    // Add our signal type definitions to Monaco's TypeScript environment
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+      signalTypesDefinition,
+      "signal-apis.d.ts"
+    );
+
+    // Configure TypeScript compiler options
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      noEmit: true,
+      esModuleInterop: true,
+      jsx: monaco.languages.typescript.JsxEmit.React,
+      reactNamespace: "React",
+      allowJs: true,
+      typeRoots: ["node_modules/@types"],
+    });
+
+    // Disable semantic validation to prevent errors about missing imports
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+    });
   }
 
   private initializeEditor() {
@@ -65,6 +130,8 @@ class SignalsPlayground {
         { token: "keyword", foreground: "569CD6" },
         { token: "string", foreground: "CE9178" },
         { token: "number", foreground: "B5CEA8" },
+        { token: "type", foreground: "4EC9B0" },
+        { token: "function", foreground: "DCDCAA" },
       ],
       colors: {
         "editor.background": "#1e1e2e",
@@ -79,7 +146,7 @@ class SignalsPlayground {
 
     this.editor = monaco.editor.create(editorContainer, {
       value: defaultExample,
-      language: "javascript",
+      language: "typescript",
       theme: "signals-theme",
       fontFamily: "'JetBrains Mono', 'Consolas', 'Monaco', monospace",
       fontSize: 14,
@@ -94,20 +161,28 @@ class SignalsPlayground {
       bracketPairColorization: { enabled: true },
       links: false,
       hover: {
-        enabled: false,
+        enabled: true,
+        delay: 300,
       },
-      quickSuggestions: false,
+      quickSuggestions: {
+        other: true,
+        comments: false,
+        strings: false,
+      },
       parameterHints: {
-        enabled: false,
+        enabled: true,
       },
       suggest: {
-        showWords: false,
-        showSnippets: false,
+        showWords: true,
+        showSnippets: true,
+        showFunctions: true,
+        showMethods: true,
+        showVariables: true,
+        showKeywords: true,
       },
     });
 
-    // Note: Users can write JavaScript code with signal/computed/effect functions
-    // Syntax highlighting will work without worker issues
+    // Note: Users now get TypeScript IntelliSense with signal/computed/effect/batch APIs!
   }
 
   private initializeFrameworkList() {
