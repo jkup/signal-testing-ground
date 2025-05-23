@@ -8,7 +8,6 @@
 import { signal, computed, effect, batch } from "./global.js";
 
 export async function runTests() {
-  console.log("🚀 Running signals test...");
   let times = 0;
 
   const src = signal(0);
@@ -22,6 +21,4 @@ export async function runTests() {
   src.set(0);
   c1.get();
   console.log(`times is now ${times}`);
-
-  console.log("\n✅ Test completed!");
 }
