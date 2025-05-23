@@ -5,6 +5,7 @@ import { solidFramework } from "../../frameworks/solid.js";
 import { alienSignalsFramework } from "../../frameworks/alien-signals.js";
 import { signaliumFramework } from "../../frameworks/signalium.js";
 import { signiaFramework } from "../../frameworks/signia.js";
+import { angularFramework } from "../../frameworks/angular.js";
 
 // Registry of all available frameworks
 export const frameworks: FrameworkImplementation[] = [
@@ -14,6 +15,7 @@ export const frameworks: FrameworkImplementation[] = [
   alienSignalsFramework,
   signaliumFramework,
   signiaFramework,
+  angularFramework,
 ];
 
 // Helper to get a framework by name
