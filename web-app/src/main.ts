@@ -81,38 +81,8 @@ class SignalsPlayground {
   }
 
   private setupTypeScript() {
-    // Add our signal type definitions to Monaco's TypeScript environment for auto-completion
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      signalTypesDefinition,
-      "signal-apis.d.ts"
-    );
-
-    // Also add to JavaScript for better IntelliSense
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      signalTypesDefinition,
-      "signal-apis.d.ts"
-    );
-
-    // Configure JavaScript defaults for better auto-completion
-    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
-      allowNonTsExtensions: true,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.ESNext,
-      noEmit: true,
-      esModuleInterop: true,
-      allowJs: true,
-    });
-
-    // Disable diagnostics to reduce worker dependencies
-    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: true,
-      noSyntaxValidation: false,
-      noSuggestionDiagnostics: true,
-    });
-
-    // Disable eager model sync to reduce worker load
-    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(false);
+    // Keep it simple - no TypeScript language service integration
+    // This avoids all "Loading..." issues from problematic workers
   }
 
   private initializeEditor() {
@@ -141,7 +111,7 @@ class SignalsPlayground {
 
     this.editor = monaco.editor.create(editorContainer, {
       value: defaultExample,
-      language: "javascript",
+      language: "javascript", // Simple JavaScript editing
       theme: "signals-theme",
       fontFamily: "'JetBrains Mono', 'Consolas', 'Monaco', monospace",
       fontSize: 14,
@@ -156,27 +126,23 @@ class SignalsPlayground {
       bracketPairColorization: { enabled: true },
       links: false,
       hover: {
-        enabled: false,
+        enabled: false, // No hover to avoid language service issues
       },
-      quickSuggestions: {
-        other: true,
-        comments: false,
-        strings: false,
-      },
+      quickSuggestions: false, // Disable to avoid "Loading..." in suggestions
       parameterHints: {
-        enabled: true,
+        enabled: false, // Disable to avoid language service calls
       },
       suggest: {
-        showWords: true,
-        showSnippets: true,
-        showFunctions: true,
-        showMethods: true,
+        showWords: true, // Keep basic word completion
+        showSnippets: false,
+        showFunctions: false,
+        showMethods: false,
         showVariables: true,
         showKeywords: true,
       },
     });
 
-    // Note: Auto-completion works great! Try typing: signal(, computed(, mySignal.get(), etc.
+    // Note: Clean, fast JavaScript editor without problematic language service features!
   }
 
   private initializeFrameworkList() {

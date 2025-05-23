@@ -2,7 +2,7 @@ export const examples = {
   "Getting Started": `/**
  * 🚀 Welcome to the Signals Testing Playground!
  * 
- * Available APIs (try auto-completion with Ctrl+Space):
+ * Available APIs:
  * • signal(value) - Create reactive state
  * • computed(() => {}) - Derived state that updates automatically  
  * • effect(() => {}) - Side effects that run when dependencies change
