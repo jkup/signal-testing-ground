@@ -5,21 +5,26 @@ import type {
   ReactiveComputed,
 } from "../types/framework";
 
-// Wrapper to adapt Signalium's API to our generic interface
-class SignaliumWrapper<T> implements ReactiveSignal<T> {
+// Wrapper to adapt Signalium state to our generic interface
+class SignaliumStateWrapper<T> implements ReactiveSignal<T> {
   constructor(private _state: any) {}
 
   get(): T {
-    return this._state();
+    return this._state.get();
   }
 
   set(value: T): void {
-    this._state(value);
+    this._state.set(value);
   }
 }
 
+// Computed wrapper using Signalium's reactive
 class SignaliumComputedWrapper<T> implements ReactiveComputed<T> {
-  constructor(private _reactive: any) {}
+  private _reactive: any;
+
+  constructor(fn: () => T) {
+    this._reactive = reactive(fn);
+  }
 
   get(): T {
     return this._reactive();
@@ -31,16 +36,15 @@ export const signaliumFramework: FrameworkImplementation = {
 
   signal: <T>(value: T) => {
     const signaliumState = state(value);
-    return new SignaliumWrapper(signaliumState);
+    return new SignaliumStateWrapper(signaliumState);
   },
 
   computed: <T>(fn: () => T) => {
-    const signaliumReactive = reactive(fn);
-    return new SignaliumComputedWrapper(signaliumReactive);
+    return new SignaliumComputedWrapper(fn);
   },
 
   effect: (fn: () => void | (() => void)) => {
-    // Signalium's watcher API is complex, so we'll use a simple implementation
+    // Signalium's effect system is complex, keeping as no-op for now
     return () => {};
   },
 

@@ -257,6 +257,21 @@ for (let i = 2; i <= 5; i++) {
 }
 
 console.log(\`\\nCompleted \${updateCount} reactive updates through 100-level deep chain\`);`,
+
+  "Simple signal test": `// Simple signal test
+let times = 0;
+
+const src = signal(0);
+const c1 = computed(() => {
+  times++;
+  return src.get();
+});
+c1.get();
+console.log(\`times is \${times}\`);
+src.set(1);
+src.set(0);
+c1.get();
+console.log(\`times is now \${times}\`);`,
 };
 
-export const defaultExample = examples["Todo App"];
+export const defaultExample = examples["Simple signal test"];
