@@ -3,7 +3,7 @@ import type {
   FrameworkImplementation,
   ReactiveSignal,
   ReactiveComputed,
-} from "../src/types/framework.js";
+} from "../types/framework";
 
 // Simple effect implementation based on TC39 polyfill documentation
 let needsEnqueue = true;
@@ -89,4 +89,9 @@ export const tc39SignalsFramework: FrameworkImplementation = {
   },
 
   effect: createEffect,
+
+  batch: (fn: () => void) => {
+    // TC39 Signals doesn't have batching, so just run directly
+    fn();
+  },
 };

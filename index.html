@@ -121,8 +121,6 @@
       .frameworks-section {
         padding: 1rem;
         border-bottom: 1px solid rgba(226, 232, 240, 0.1);
-        /* Temporarily hidden */
-        display: none;
       }
 
       .frameworks-section h3 {
@@ -279,8 +277,7 @@
       <div style="display: flex; align-items: center">
         <h1>⚡ Signals Testing Playground</h1>
         <span class="header-subtitle"
-          >Test JavaScript signals across multiple frameworks (Setup in
-          Progress)</span
+          >Test JavaScript signals across 8 different frameworks</span
         >
       </div>
     </div>
@@ -289,7 +286,7 @@
       <div class="editor-panel">
         <div class="editor-header">
           <h2>📝 Test Code</h2>
-          <button id="runButton" class="run-button">Test Editor</button>
+          <button id="runButton" class="run-button">Run Tests</button>
         </div>
         <div class="editor-container" id="editorContainer"></div>
       </div>
@@ -303,20 +300,10 @@
         </div>
 
         <div class="results-section">
-          <h3>🚧 Setup Status</h3>
-          <div class="setup-info">
-            <h4>Current Progress</h4>
-            <p>
-              ✅ Monaco Editor integration<br />
-              ✅ Vite build system<br />
-              ✅ TypeScript configuration<br />
-              🔄 Framework implementations (in progress)<br />
-              ⏳ Signal testing system<br />
-            </p>
-          </div>
+          <h3>📊 Results</h3>
           <div id="resultsContainer">
             <div style="text-align: center; color: #94a3b8; padding: 2rem">
-              Click "Test Editor" to verify Monaco editor is working
+              Select frameworks and click "Run Tests" to see results
             </div>
           </div>
         </div>

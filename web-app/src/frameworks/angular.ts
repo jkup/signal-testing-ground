@@ -3,7 +3,7 @@ import type {
   FrameworkImplementation,
   ReactiveSignal,
   ReactiveComputed,
-} from "../src/types/framework.js";
+} from "../types/framework";
 
 // Wrapper to adapt Angular signal to our generic interface
 class AngularSignalWrapper<T> implements ReactiveSignal<T> {
@@ -16,23 +16,12 @@ class AngularSignalWrapper<T> implements ReactiveSignal<T> {
   set(value: T): void {
     this._signal.set(value);
   }
-
-  peek(): T {
-    // Angular signals don't have a built-in peek, but calling them should work
-    // since they're functional and won't track dependencies outside of effects/computed
-    return this._signal();
-  }
 }
 
 class AngularComputedWrapper<T> implements ReactiveComputed<T> {
   constructor(private _computed: any) {}
 
   get(): T {
-    return this._computed();
-  }
-
-  peek(): T {
-    // For computed values, calling them directly should work for peek
     return this._computed();
   }
 }
@@ -55,5 +44,10 @@ export const angularFramework: FrameworkImplementation = {
     // For testing purposes, we'll return a no-op function
     // The signal and computed functionality will still be tested
     return () => {};
+  },
+
+  batch: (fn: () => void) => {
+    // Angular doesn't have batching, so just run directly
+    fn();
   },
 };

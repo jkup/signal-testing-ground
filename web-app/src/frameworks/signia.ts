@@ -3,7 +3,7 @@ import type {
   FrameworkImplementation,
   ReactiveSignal,
   ReactiveComputed,
-} from "../src/types/framework.js";
+} from "../types/framework";
 
 // Wrapper to adapt signia atom to our generic interface
 class SigniaAtomWrapper<T> implements ReactiveSignal<T> {
@@ -16,11 +16,6 @@ class SigniaAtomWrapper<T> implements ReactiveSignal<T> {
   set(value: T): void {
     this._atom.set(value);
   }
-
-  peek(): T {
-    // Signia atoms have a __unsafe__getWithoutCapture method for peeking
-    return this._atom.__unsafe__getWithoutCapture?.() ?? this._atom.value;
-  }
 }
 
 class SigniaComputedWrapper<T> implements ReactiveComputed<T> {
@@ -28,13 +23,6 @@ class SigniaComputedWrapper<T> implements ReactiveComputed<T> {
 
   get(): T {
     return this._computed.value;
-  }
-
-  peek(): T {
-    // For computed values, use __unsafe__getWithoutCapture if available
-    return (
-      this._computed.__unsafe__getWithoutCapture?.() ?? this._computed.value
-    );
   }
 }
 
@@ -55,5 +43,10 @@ export const signiaFramework: FrameworkImplementation = {
     // react returns a dispose function, which matches our interface perfectly
     const dispose = react(`effect-${Date.now()}`, fn);
     return dispose;
+  },
+
+  batch: (fn: () => void) => {
+    // Signia doesn't have batching, so just run directly
+    fn();
   },
 };

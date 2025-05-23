@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signals Testing Playground</title>
+    <meta
+      name="description"
+      content="Interactive playground for testing JavaScript signals across multiple frameworks"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background: rgba(30, 30, 46, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .title::before {
+        content: "⚡";
+        font-size: 1.25rem;
+      }
+
+      .run-button {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      }
+
+      .run-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      }
+
+      .run-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .main-container {
+        flex: 1;
+        display: flex;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        min-height: 0;
+      }
+
+      .editor-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: rgba(30, 30, 46, 0.5);
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.1);
+        overflow: hidden;
+        min-height: 600px;
+      }
+
+      .panel-header {
+        background: rgba(15, 15, 35, 0.7);
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #e2e8f0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+      }
+
+      .editor-container {
+        flex: 1;
+        min-height: 0;
+      }
+
+      .results-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: rgba(30, 30, 46, 0.5);
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.1);
+        overflow: hidden;
+        min-height: 600px;
+      }
+
+      .framework-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: rgba(15, 15, 35, 0.4);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+      }
+
+      .framework-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+        user-select: none;
+      }
+
+      .framework-item:hover {
+        background: rgba(99, 102, 241, 0.1);
+      }
+
+      .framework-checkbox {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .framework-name {
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        cursor: pointer;
+      }
+
+      .results-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .result-item {
+        background: rgba(15, 15, 35, 0.6);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        border: 1px solid rgba(226, 232, 240, 0.1);
+        overflow: hidden;
+      }
+
+      .result-item.success {
+        border-left: 4px solid #22c55e;
+      }
+
+      .result-item.error {
+        border-left: 4px solid #ef4444;
+      }
+
+      .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem 0.5rem;
+      }
+
+      .result-framework {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #e2e8f0;
+      }
+
+      .result-timing {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-family: "JetBrains Mono", "Consolas", "Monaco", monospace;
+      }
+
+      .result-output {
+        padding: 0.5rem 1rem 0.75rem;
+        font-family: "JetBrains Mono", "Consolas", "Monaco", monospace;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        color: #cbd5e1;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .result-output.result-error {
+        color: #fca5a5;
+      }
+
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+        gap: 1rem;
+      }
+
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba(99, 102, 241, 0.3);
+        border-top: 3px solid #6366f1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .main-container {
+          flex-direction: column;
+          height: auto;
+        }
+
+        .framework-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .editor-panel,
+        .results-panel {
+          min-height: 400px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .header-content {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .title {
+          font-size: 1.25rem;
+        }
+
+        .framework-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <h1 class="title">Signals Testing Playground</h1>
+        <button id="runButton" class="run-button">Run Tests</button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <div class="editor-panel">
+        <div class="panel-header">Signal Code Editor</div>
+        <div id="editorContainer" class="editor-container"></div>
+      </div>
+
+      <div class="results-panel">
+        <div class="panel-header">Framework Selection</div>
+        <div id="frameworkGrid" class="framework-grid"></div>
+        <div class="panel-header">Test Results</div>
+        <div id="resultsContainer" class="results-container">
+          <div style="text-align: center; color: #94a3b8; padding: 2rem">
+            Select frameworks and click "Run Tests" to see results
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
