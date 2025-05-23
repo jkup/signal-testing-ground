@@ -42,14 +42,37 @@ class SolidComputedWrapper<T> implements ReactiveComputed<T> {
 }
 
 let rootDispose: (() => void) | null = null;
+let isInRoot = false;
+
+// Helper to ensure we're in a root context
+function ensureRoot<T>(fn: () => T): T {
+  if (isInRoot) {
+    return fn();
+  }
+
+  let result: T;
+  createRoot(() => {
+    isInRoot = true;
+    try {
+      result = fn();
+    } finally {
+      isInRoot = false;
+    }
+  });
+  return result!;
+}
 
 export const solidFramework: FrameworkImplementation = {
   name: "SolidJS",
 
   setup: () => {
-    // Create a root context for SolidJS to work properly
-    rootDispose = createRoot(() => {
-      return () => {}; // Return a cleanup function
+    // Create a shared root context for all SolidJS operations
+    rootDispose = createRoot((dispose) => {
+      isInRoot = true;
+      return () => {
+        isInRoot = false;
+        dispose();
+      };
     });
   },
 
@@ -58,35 +81,30 @@ export const solidFramework: FrameworkImplementation = {
       rootDispose();
       rootDispose = null;
     }
+    isInRoot = false;
   },
 
   signal: <T>(value: T) => {
-    let getter: () => T;
-    let setter: (value: T) => void;
-
-    createRoot(() => {
-      const [g, s] = createSignal(value);
-      getter = g as () => T;
-      setter = s as (value: T) => void;
+    return ensureRoot(() => {
+      const [getter, setter] = createSignal(value);
+      return new SolidSignalWrapper(
+        getter as () => T,
+        setter as (value: T) => void
+      );
     });
-
-    return new SolidSignalWrapper(getter!, setter!);
   },
 
   computed: <T>(fn: () => T) => {
-    let memo: () => T;
-
-    createRoot(() => {
-      memo = createMemo(fn) as () => T;
+    return ensureRoot(() => {
+      const memo = createMemo(fn);
+      return new SolidComputedWrapper(memo as () => T);
     });
-
-    return new SolidComputedWrapper(memo!);
   },
 
   effect: (fn: () => void | (() => void)) => {
     let dispose: (() => void) | undefined;
 
-    createRoot(() => {
+    ensureRoot(() => {
       createEffect(() => {
         const result = fn();
         if (typeof result === "function") {
