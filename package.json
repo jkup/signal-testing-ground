@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "run": "tsx scripts/run-all.ts",
-    "test": "node --test dist/test/**/*.js"
+    "test": "tsx scripts/run-all.ts"
   },
   "keywords": [
     "signals",

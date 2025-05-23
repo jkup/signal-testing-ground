@@ -114,7 +114,12 @@ export const frameworks = [
 
 - **Preact Signals** (`@preact/signals-core`) - Lightweight, fast signals with excellent standalone support
 - **Vue Reactivity** (`@vue/reactivity`) - Vue 3's reactive system, works well standalone but doesn't support batching
-- **SolidJS** (`solid-js`) - Fine-grained reactive framework (⚠️ **Note**: SolidJS is designed for component-based usage and has limitations when used standalone. Effects and some reactive features may not work as expected outside of a SolidJS component context.)
+- **SolidJS** (`solid-js`) - Fine-grained reactive framework (⚠️ **Note**: Effects and some reactive features may not work as expected outside of a SolidJS component context.)
+- **Alien Signals** (`alien-signals`) - Ultra-lightweight push-pull based algorithm by StackBlitz
+- **Signalium** (`signalium`) - Advanced object-oriented API with first-class async support
+- **Signia** (`signia`) - Clock-based lazy reactivity system designed to scale, by tldraw
+- **Angular Signals** (`@angular/core`) - Angular's official signals implementation
+- **TC39 Signals** (`signal-polyfill`) - Official polyfill for the proposed JavaScript signals standard
 
 ## 📝 License
 
