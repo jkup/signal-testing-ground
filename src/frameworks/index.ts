@@ -6,6 +6,7 @@ import { alienSignalsFramework } from "../../frameworks/alien-signals.js";
 import { signaliumFramework } from "../../frameworks/signalium.js";
 import { signiaFramework } from "../../frameworks/signia.js";
 import { angularFramework } from "../../frameworks/angular.js";
+import { tc39SignalsFramework } from "../../frameworks/tc39-signals.js";
 
 // Registry of all available frameworks
 export const frameworks: FrameworkImplementation[] = [
@@ -16,6 +17,7 @@ export const frameworks: FrameworkImplementation[] = [
   signaliumFramework,
   signiaFramework,
   angularFramework,
+  tc39SignalsFramework,
 ];
 
 // Helper to get a framework by name
