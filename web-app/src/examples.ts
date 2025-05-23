@@ -1,4 +1,55 @@
 export const examples = {
+  "Getting Started": `/**
+ * 🚀 Welcome to the Signals Testing Playground!
+ * 
+ * You have access to these reactive primitives:
+ * • signal(value) - Create reactive state
+ * • computed(() => {}) - Derived state that updates automatically  
+ * • effect(() => {}) - Side effects that run when dependencies change
+ * • batch(() => {}) - Group multiple updates together
+ * 
+ * Try editing this code and click "Run Tests" to see how different 
+ * signal frameworks handle the same reactive logic!
+ */
+
+// Create a reactive signal with an initial value
+const count = signal(0);
+
+// Computed values automatically update when their dependencies change
+const doubled = computed(() => {
+  console.log('Computing doubled value...');
+  return count.get() * 2;
+});
+
+const message = computed(() => {
+  const current = count.get();
+  return current === 0 ? 'Click to start!' : \`Count is \${current}\`;
+});
+
+// Effects run automatically when their dependencies change
+effect(() => {
+  const current = count.get();
+  const doubledValue = doubled.get();
+  const msg = message.get();
+  
+  console.log(\`📊 \${msg} (doubled: \${doubledValue})\`);
+});
+
+console.log('=== Initial state ===');
+
+console.log('\\n=== Updating count ===');
+count.set(1);
+count.set(2);
+count.set(3);
+
+console.log('\\n=== Batch updates (should only log once) ===');
+batch(() => {
+  count.set(10);
+  console.log('Changed to 10 inside batch');
+});
+
+console.log('\\n✨ Try editing this code to experiment with signals!');`,
+
   "Todo App": `// Interactive Todo App demonstrating all signal features
 let nextId = 1;
 
@@ -258,20 +309,40 @@ for (let i = 2; i <= 5; i++) {
 
 console.log(\`\\nCompleted \${updateCount} reactive updates through 100-level deep chain\`);`,
 
-  "Simple signal test": `// Simple signal test
-let times = 0;
+  "Build Your Own": `/**
+ * 🎨 Build Your Own Signal Example!
+ * 
+ * Available APIs:
+ * • signal(initialValue) - Creates reactive state
+ * • computed(() => expression) - Derived state  
+ * • effect(() => { sideEffects }) - Runs when dependencies change
+ * • batch(() => { updates }) - Groups multiple updates
+ * 
+ * Ideas to try:
+ * • Shopping cart with items and total
+ * • Form validation with multiple fields
+ * • Real-time clock or timer
+ * • Data fetching simulation
+ * • Game state management
+ * 
+ * This code runs in 7 different signal frameworks simultaneously!
+ */
 
-const src = signal(0);
-const c1 = computed(() => {
-  times++;
-  return src.get();
+// Your code here! Start with something simple:
+
+const name = signal('World');
+const greeting = computed(() => \`Hello, \${name.get()}!\`);
+
+effect(() => {
+  console.log(greeting.get());
 });
-c1.get();
-console.log(\`times is \${times}\`);
-src.set(1);
-src.set(0);
-c1.get();
-console.log(\`times is now \${times}\`);`,
+
+// Try changing the name:
+name.set('Signals');
+name.set('Reactive Programming');
+
+// Or build something more complex...
+console.log('\\n✨ Edit this code to build your own reactive example!');`,
 };
 
-export const defaultExample = examples["Todo App"];
+export const defaultExample = examples["Getting Started"];
