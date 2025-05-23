@@ -1,38 +1,39 @@
 {
-  "name": "signal-testing-ground",
+  "name": "signals-testing-playground",
   "version": "1.0.0",
-  "description": "A testing ground for JavaScript Signal libraries",
   "type": "module",
-  "main": "dist/index.js",
+  "description": "Interactive playground for testing JavaScript signals across multiple frameworks",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "test": "tsx scripts/run-all.ts"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [
     "signals",
     "reactivity",
-    "testing",
     "javascript",
-    "typescript"
+    "typescript",
+    "playground"
   ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.3"
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-monaco-editor": "^1.1.0"
   },
   "dependencies": {
-    "@angular/core": "^19.2.12",
-    "@preact/signals-core": "^1.5.1",
-    "@vue/reactivity": "^3.4.0",
+    "@angular/core": "^19.2.13",
+    "@preact/signals-core": "^1.8.0",
+    "@vue/reactivity": "^3.5.14",
     "alien-signals": "^2.0.5",
+    "monaco-editor": "^0.52.2",
     "rxjs": "^7.8.2",
-    "signal-polyfill": "^0.2.2",
-    "signalium": "^1.0.2",
     "signia": "^0.1.5",
-    "solid-js": "^1.8.7",
+    "signalium": "^1.0.2",
+    "signal-polyfill": "^0.2.2",
+    "solid-js": "^1.9.7",
     "zone.js": "^0.15.1"
   }
 }

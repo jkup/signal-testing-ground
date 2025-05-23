@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signals Testing Playground</title>
+    <meta
+      name="description"
+      content="Interactive playground for testing JavaScript signals across multiple frameworks"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        color: #e2e8f0;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .header {
+        background: rgba(15, 15, 35, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 100;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .header-subtitle {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        margin-left: 1rem;
+      }
+
+      .main-container {
+        display: flex;
+        height: calc(100vh - 80px);
+      }
+
+      .editor-panel {
+        flex: 1;
+        background: #1e1e2e;
+        border-right: 1px solid rgba(226, 232, 240, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .editor-header {
+        padding: 1rem;
+        background: rgba(30, 30, 46, 0.8);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .editor-header h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+
+      .run-button {
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+      }
+
+      .run-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(96, 165, 250, 0.3);
+      }
+
+      .run-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .editor-container {
+        flex: 1;
+        position: relative;
+      }
+
+      .results-panel {
+        width: 400px;
+        background: #16182a;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .frameworks-section {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+        /* Temporarily hidden */
+        display: none;
+      }
+
+      .frameworks-section h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .framework-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+
+      .framework-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+      }
+
+      .framework-item:hover {
+        background: rgba(96, 165, 250, 0.1);
+      }
+
+      .framework-checkbox {
+        margin-right: 0.5rem;
+        accent-color: #60a5fa;
+      }
+
+      .framework-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #cbd5e1;
+      }
+
+      .results-section {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .results-section h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .result-item {
+        background: rgba(30, 30, 46, 0.6);
+        border: 1px solid rgba(226, 232, 240, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+      }
+
+      .result-item.success {
+        border-color: rgba(34, 197, 94, 0.3);
+        background: rgba(34, 197, 94, 0.05);
+      }
+
+      .result-item.error {
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.05);
+      }
+
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .result-framework {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+
+      .result-timing {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .result-output {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: #cbd5e1;
+        white-space: pre-wrap;
+        line-height: 1.4;
+      }
+
+      .result-error {
+        color: #fca5a5;
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        color: #94a3b8;
+      }
+
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(96, 165, 250, 0.3);
+        border-top: 2px solid #60a5fa;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .setup-info {
+        padding: 1rem;
+        background: rgba(30, 30, 46, 0.3);
+        border-radius: 8px;
+        border: 1px solid rgba(226, 232, 240, 0.1);
+        margin-bottom: 1rem;
+      }
+
+      .setup-info h4 {
+        color: #60a5fa;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .setup-info p {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div style="display: flex; align-items: center">
+        <h1>⚡ Signals Testing Playground</h1>
+        <span class="header-subtitle"
+          >Test JavaScript signals across multiple frameworks (Setup in
+          Progress)</span
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="editor-panel">
+        <div class="editor-header">
+          <h2>📝 Test Code</h2>
+          <button id="runButton" class="run-button">Test Editor</button>
+        </div>
+        <div class="editor-container" id="editorContainer"></div>
+      </div>
+
+      <div class="results-panel">
+        <div class="frameworks-section">
+          <h3>🔧 Frameworks</h3>
+          <div class="framework-grid" id="frameworkGrid">
+            <!-- Framework checkboxes will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <div class="results-section">
+          <h3>🚧 Setup Status</h3>
+          <div class="setup-info">
+            <h4>Current Progress</h4>
+            <p>
+              ✅ Monaco Editor integration<br />
+              ✅ Vite build system<br />
+              ✅ TypeScript configuration<br />
+              🔄 Framework implementations (in progress)<br />
+              ⏳ Signal testing system<br />
+            </p>
+          </div>
+          <div id="resultsContainer">
+            <div style="text-align: center; color: #94a3b8; padding: 2rem">
+              Click "Test Editor" to verify Monaco editor is working
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
