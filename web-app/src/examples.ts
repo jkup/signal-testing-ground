@@ -274,4 +274,4 @@ c1.get();
 console.log(\`times is now \${times}\`);`,
 };
 
-export const defaultExample = examples["Simple signal test"];
+export const defaultExample = examples["Todo App"];

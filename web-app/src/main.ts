@@ -21,7 +21,7 @@ import { preactFramework } from "./frameworks/preact";
 import { vueFramework } from "./frameworks/vue";
 import { solidFramework } from "./frameworks/solid";
 import { alienSignalsFramework } from "./frameworks/alien-signals";
-import { signaliumFramework } from "./frameworks/signalium";
+// import { signaliumFramework } from "./frameworks/signalium"; // Disabled: browser compatibility issues with complex reactive chains
 import { signiaFramework } from "./frameworks/signia";
 import { angularFramework } from "./frameworks/angular";
 import { tc39SignalsFramework } from "./frameworks/tc39-signals";
@@ -43,7 +43,7 @@ class SignalsPlayground {
     vueFramework,
     solidFramework,
     alienSignalsFramework,
-    signaliumFramework,
+    // signaliumFramework, // Disabled: works in CLI but has browser compatibility issues
     signiaFramework,
     angularFramework,
     tc39SignalsFramework,
