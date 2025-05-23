@@ -28,6 +28,7 @@
     "@preact/signals-core": "^1.5.1",
     "@vue/reactivity": "^3.4.0",
     "alien-signals": "^2.0.5",
+    "signalium": "^1.0.2",
     "solid-js": "^1.8.7"
   }
 }
